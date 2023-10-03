@@ -9,3 +9,6 @@ keewebx project is opinioned web framework with tightly bindings on libraries of
 
 
 
+# License
+
+MIT
