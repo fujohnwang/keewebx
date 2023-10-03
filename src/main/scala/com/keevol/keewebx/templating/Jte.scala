@@ -10,13 +10,15 @@ import gg.jte.resolve.DirectoryCodeResolver
 import org.slf4j.LoggerFactory
 
 import java.nio.file.Path
-
+/**
+ * @author {@link afoo.me}
+ */
 object Jte {
   private val logger = LoggerFactory.getLogger("Jte Utility")
 
   // init template engine at start
 
-  val templateEngine: AtomicReference[TemplateEngine] = new AtomicReference[TemplateEngine]()
+  private val templateEngine: AtomicReference[TemplateEngine] = new AtomicReference[TemplateEngine]()
   templateEngine.set(if (isProductionEnv()) {
     logger.info(s"profile=production, create Precompiled TemplateEngine for Jte.")
     TemplateEngine.createPrecompiled(Path.of("jte-classes"), ContentType.Html, getClass.getClassLoader())
@@ -32,8 +34,11 @@ object Jte {
     output.toString
   }
 
+
+  def getJteTemplateEngineIfNecessary(): TemplateEngine = templateEngine.get()
+
   def main(args: Array[String]): Unit = {
-    println(Jte.render("test.jte", new JsonObject().put("message","mock message")))
+    println(Jte.render("test.jte", new JsonObject().put("message", "mock message")))
   }
 
 }

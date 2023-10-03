@@ -7,7 +7,9 @@ import com.keevol.keewebx.utils.WebResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import org.slf4j.{Logger, LoggerFactory}
-
+/**
+ * @author {@link afoo.me}
+ */
 object Bootstrap {
   val logger: Logger = LoggerFactory.getLogger("Keewebx")
 
