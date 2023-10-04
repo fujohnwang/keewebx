@@ -15,6 +15,8 @@ object Bootstrap {
 
   def main(args: Array[String]): Unit = {
     val config = new Konfig(getClass.getClassLoader.getResourceAsStream("application.properties"))
+    KeewebxGlobals.config(config)
+
     val host = config.get("server.host")
     val port = config.get("server.port")
 

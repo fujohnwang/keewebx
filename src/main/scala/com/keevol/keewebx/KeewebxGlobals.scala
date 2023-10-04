@@ -4,12 +4,15 @@ import com.keevol.config.Konfig
 import org.apache.commons.lang3.StringUtils
 
 import java.util.concurrent.atomic.AtomicReference
+
 /**
  * @author {@link afoo.me}
  */
 object KeewebxGlobals {
 
   val config: AtomicReference[Konfig] = new AtomicReference[Konfig]()
+
+  def config(cfg: Konfig): Unit = if (cfg != null) config.set(cfg)
 
   def isProductionEnv(): Boolean = {
     if (config.get() == null) return false

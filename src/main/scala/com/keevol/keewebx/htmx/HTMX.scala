@@ -4,6 +4,8 @@ import io.vertx.ext.web.RoutingContext
 import org.apache.commons.lang3.StringUtils
 
 /**
+ * This is the utility class implementation mentioned in ebook 'Unveil HTMX'(HTMX揭秘){@link https://store.afoo.me/l/htmx}
+ *
  * @author {@link afoo.me}
  */
 object HTMX {
