@@ -47,7 +47,7 @@
     <h2 class="text-3xl">Explanation</h2>
     <p>Euler's identity is a special case of Euler's formula from complex
         analysis, which states that for any real number </p>
-    <p>${json.getString("message")}</p>
+    <p style="font-size: 111px; color:red;">${json.getString("message")}</p>
 </main>
 
 <script>
