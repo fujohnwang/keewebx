@@ -16,9 +16,8 @@ import java.nio.file.Path
 object Jte {
   private val logger = LoggerFactory.getLogger("Jte Utility")
 
-  // init template engine at start
-
   private val templateEngine: AtomicReference[TemplateEngine] = new AtomicReference[TemplateEngine]()
+  // init template engine at start
   templateEngine.set(if (isProductionEnv()) {
     logger.info(s"profile=production, create Precompiled TemplateEngine for Jte.")
     TemplateEngine.createPrecompiled(Path.of("jte-classes"), ContentType.Html, getClass.getClassLoader())
@@ -33,7 +32,6 @@ object Jte {
     templateEngine.get().render(templatePath, context, output)
     output.toString
   }
-
 
   def getJteTemplateEngineIfNecessary(): TemplateEngine = templateEngine.get()
 

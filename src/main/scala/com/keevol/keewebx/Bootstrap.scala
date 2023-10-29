@@ -1,12 +1,12 @@
 package com.keevol.keewebx
 
-import com.keevol.config.Konfig
 import com.keevol.kate.{Kate, RouteRegister}
 import com.keevol.keewebx.templating.Jte
 import com.keevol.keewebx.utils.WebResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import org.slf4j.{Logger, LoggerFactory}
+
 /**
  * @author {@link afoo.me}
  */
@@ -14,8 +14,7 @@ object Bootstrap {
   val logger: Logger = LoggerFactory.getLogger("Keewebx")
 
   def main(args: Array[String]): Unit = {
-    val config = new Konfig(getClass.getClassLoader.getResourceAsStream("application.properties"))
-    KeewebxGlobals.config(config)
+    val config = KeewebxGlobals.config.get()
 
     val host = config.get("server.host")
     val port = config.get("server.port")

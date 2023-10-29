@@ -11,8 +11,7 @@ import java.util.concurrent.atomic.AtomicReference
 object KeewebxGlobals {
 
   val config: AtomicReference[Konfig] = new AtomicReference[Konfig]()
-
-  def config(cfg: Konfig): Unit = if (cfg != null) config.set(cfg)
+  config.set(new Konfig(getClass.getClassLoader.getResourceAsStream("application.properties")))
 
   def isProductionEnv(): Boolean = {
     if (config.get() == null) return false
