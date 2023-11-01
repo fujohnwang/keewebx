@@ -31,7 +31,9 @@ import org.slf4j.{Logger, LoggerFactory}
 abstract class AbstractRouteRegister extends RouteRegister {
   val logger: Logger = LoggerFactory.getLogger(classOf[AbstractRouteRegister])
 
-  def ok(ctx: RoutingContext, templatePath: String, templateDataMap: JsonObject): Unit = WebResponse.ok(ctx, Jte.render(templatePath, templateDataMap))
+  def render(ctx: RoutingContext, templatePath: String, templateDataMap: JsonObject): Unit = WebResponse.html(ctx, Jte.render(templatePath, templateDataMap))
+
+  def respondWithJson(ctx: RoutingContext, json: JsonObject): Unit = WebResponse.json(ctx, json)
 }
 
 /**

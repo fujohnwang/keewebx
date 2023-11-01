@@ -23,7 +23,7 @@ object Bootstrap {
       override def apply(router: Router): Unit = {
         router.route("/").handler(ctx => ctx.response().end("fuck it"))
         router.route("/html").handler(ctx => {
-          WebResponse.ok(ctx, Jte.render("test.jte", new JsonObject().put("message", "mock message")))
+          WebResponse.html(ctx, Jte.render("test.jte", new JsonObject().put("message", "mock message")))
         })
       }
     }))

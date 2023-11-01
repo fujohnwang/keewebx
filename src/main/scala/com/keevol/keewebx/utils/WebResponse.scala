@@ -1,6 +1,7 @@
 package com.keevol.keewebx.utils
 
 import com.keevol.kate.utils.ResponseUtils
+import io.vertx.core.json.{Json, JsonObject}
 import io.vertx.ext.web.RoutingContext
 
 
@@ -11,7 +12,10 @@ import io.vertx.ext.web.RoutingContext
  *
  */
 object WebResponse {
-  def ok(ctx: RoutingContext, html: String) = ResponseUtils.html(ctx, html, 200)
+
+  def json(ctx: RoutingContext, payload: JsonObject): Unit = ResponseUtils.json(ctx, payload, 200)
+
+  def html(ctx: RoutingContext, html: String) = ResponseUtils.html(ctx, html, 200)
 
   def notFound(ctx: RoutingContext): Unit = ctx.response().setStatusCode(404).end()
 
