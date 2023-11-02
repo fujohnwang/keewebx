@@ -54,10 +54,23 @@ object Handlers {
     }).start(() => handler.handle(ctx))
   }
 
-  def chain(handler: Handler[RoutingContext]): Handler[RoutingContext] = async {
-    safe {
-      handler
+  def chain(handler: Handler[RoutingContext]): Handler[RoutingContext] =
+    async {
+      safe {
+        handler
+      }
     }
+
+  def fastReturn[T](preprocessor: RoutingContext => T, action: T => Unit): Handler[RoutingContext] = { ctx =>
+    val handlerContext = preprocessor(ctx) // take out parameters or body information before run action in async.
+    Future {
+      try {
+        action(handlerContext)
+      } catch {
+        case t: Throwable => logger.warn(s"ignorable exception in fast return handler: \n${ExceptionUtils.getStackTrace(t)}")
+      }
+    }
+    ctx.response().setStatusCode(202).setStatusMessage("Accepted").end()
   }
 
 }

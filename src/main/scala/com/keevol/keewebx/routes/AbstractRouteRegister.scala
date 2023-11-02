@@ -42,6 +42,25 @@ abstract class AbstractRouteRegister extends RouteRegister {
   def body(ctx: RoutingContext): String = WebRequest.body(ctx)
 
   def createHandler(handler: Handler[RoutingContext]): Handler[RoutingContext] = Handlers.chain(handler)
+
+  /**
+   * server scheduled the execution in async, but client is still waiting... mainly  to avoid blocking serverside event loop.
+   *
+   * @param handler
+   * @return
+   */
+  def createFireNForgetHandler(handler: Handler[RoutingContext]): Handler[RoutingContext] = createHandler(handler)
+
+  /**
+   * send back to client fast, but server is still processing.
+   *
+   * @param preprocessor
+   * @param action
+   * @param T
+   * @return
+   */
+  def createFastReturnHandler[T](preprocessor: RoutingContext => T, action: T => Unit): Handler[RoutingContext] = Handlers.fastReturn(preprocessor, action)
+
 }
 
 /**
