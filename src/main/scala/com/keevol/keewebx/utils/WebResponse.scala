@@ -24,6 +24,8 @@ object WebResponse {
   def notAuthorized(ctx: RoutingContext): Unit = ctx.response().setStatusCode(403).end()
 
   def forbidden(ctx: RoutingContext): Unit = notAuthorized(ctx)
+
+  def badRequest(ctx: RoutingContext): Unit = ctx.response().setStatusCode(400).setStatusMessage("bad request").end()
 }
 
 

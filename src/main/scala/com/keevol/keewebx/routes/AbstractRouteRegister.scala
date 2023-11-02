@@ -2,11 +2,10 @@ package com.keevol.keewebx.routes
 
 import com.keevol.kate.RouteRegister
 import com.keevol.keewebx.templating.Jte
-import com.keevol.keewebx.utils.{Handlers, WebResponse}
+import com.keevol.keewebx.utils.{Handlers, WebRequest, WebResponse}
 import io.vertx.core.Handler
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.{Router, RoutingContext}
-import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.{Logger, LoggerFactory}
 
 /**
@@ -29,11 +28,20 @@ import org.slf4j.{Logger, LoggerFactory}
  */
 
 abstract class AbstractRouteRegister extends RouteRegister {
+
   val logger: Logger = LoggerFactory.getLogger(classOf[AbstractRouteRegister])
 
   def render(ctx: RoutingContext, templatePath: String, templateDataMap: JsonObject): Unit = WebResponse.html(ctx, Jte.render(templatePath, templateDataMap))
 
   def respondWithJson(ctx: RoutingContext, json: JsonObject): Unit = WebResponse.json(ctx, json)
+
+  def header(ctx: RoutingContext, name: String): String = WebRequest.header(ctx, name)
+
+  def param(ctx: RoutingContext, name: String): String = WebRequest.param(ctx, name)
+
+  def body(ctx: RoutingContext): String = WebRequest.body(ctx)
+
+  def createHandler(handler: Handler[RoutingContext]): Handler[RoutingContext] = Handlers.chain(handler)
 }
 
 /**
@@ -43,6 +51,6 @@ abstract class AbstractRouteRegister extends RouteRegister {
  */
 class DefaultRouteRegister(routes: Array[(String, Handler[RoutingContext])]) extends AbstractRouteRegister {
   override def apply(router: Router): Unit = {
-    routes.foreach(route => router.route(route._1).handler(Handlers.chain(route._2)))
+    routes.foreach(route => router.route(route._1).handler(createHandler(route._2)))
   }
 }
