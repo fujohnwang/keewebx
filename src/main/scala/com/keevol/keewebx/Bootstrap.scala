@@ -2,16 +2,20 @@ package com.keevol.keewebx
 
 import com.keevol.kate.{Kate, RouteRegister}
 import com.keevol.keewebx.templating.Jte
-import com.keevol.keewebx.utils.WebResponse
+import com.keevol.keewebx.utils.{CsrfTokenManager, WebResponse}
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import org.slf4j.{Logger, LoggerFactory}
+
+import java.util.Date
 
 /**
  * @author {@link afoo.me}
  */
 object Bootstrap {
   val logger: Logger = LoggerFactory.getLogger("Keewebx")
+
+  val csrfTokenManager = new CsrfTokenManager("change password to use in production")
 
   def main(args: Array[String]): Unit = {
     val config = KeewebxGlobals.config.get()
@@ -24,6 +28,17 @@ object Bootstrap {
         router.route("/").handler(ctx => ctx.response().end("fuck it"))
         router.route("/html").handler(ctx => {
           WebResponse.html(ctx, Jte.render("test.jte", new JsonObject().put("message", "mock message")))
+        })
+        router.get("/form_submit").handler(ctx => {
+          csrfTokenManager.distribute(ctx)
+          WebResponse.html(ctx, Jte.render("form.jte", null))
+        })
+        router.post("/form_submit").handler(ctx => {
+          if (csrfTokenManager.isCsrfTokenValid(ctx)) {
+            WebResponse.html(ctx, "OK")
+          } else {
+            WebResponse.html(ctx, s"oops, csrf token expires at ${new Date()}")
+          }
         })
       }
     }))
