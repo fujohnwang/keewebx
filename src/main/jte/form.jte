@@ -1,3 +1,5 @@
+@param io.vertx.core.json.JsonObject json
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,6 +52,7 @@
                                 <h1 class="text-6xl">CSRF TOKEN FORM DEMO</h1>
                                 <label for="message" class="text-sm leading-7 text-gray-600">Message</label>
                                 <textarea id="message" name="message" class="h-32 w-full resize-none rounded border border-gray-300 bg-gray-100 bg-opacity-50 px-3 py-1 text-base leading-6 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200"></textarea>
+                                <input type="hidden" name="csrf_token" value="${json.getString("csrf_token")}"/>
                             </div>
                         </div>
                         <div class="w-full p-2">

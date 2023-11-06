@@ -1,5 +1,6 @@
 package com.keevol.keewebx
 
+import com.keevol.goodies.lifecycle.ShutdownHook
 import com.keevol.kate.{Kate, RouteRegister}
 import com.keevol.keewebx.templating.Jte
 import com.keevol.keewebx.utils.{CsrfTokenManager, WebResponse}
@@ -30,19 +31,21 @@ object Bootstrap {
           WebResponse.html(ctx, Jte.render("test.jte", new JsonObject().put("message", "mock message")))
         })
         router.get("/form_submit").handler(ctx => {
-          csrfTokenManager.distribute(ctx)
-          WebResponse.html(ctx, Jte.render("form.jte", null))
+          val csrfToken = csrfTokenManager.issue(ctx)
+          WebResponse.html(ctx, Jte.render("form.jte", new JsonObject().put("csrf_token", csrfToken)))
         })
         router.post("/form_submit").handler(ctx => {
           if (csrfTokenManager.isCsrfTokenValid(ctx)) {
             WebResponse.html(ctx, "OK")
           } else {
-            WebResponse.html(ctx, s"oops, csrf token expires at ${new Date()}")
+            WebResponse.html(ctx, s"oops, csrf token expires at ${new Date().getTime}")
           }
         })
       }
     }))
+    ShutdownHook.add(() => webServer.stop())
     logger.info(s"start keewebx server at ${host}:${port}")
     webServer.start(host, port.toInt)
+
   }
 }

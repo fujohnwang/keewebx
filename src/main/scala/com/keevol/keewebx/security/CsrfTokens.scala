@@ -3,7 +3,7 @@ package com.keevol.keewebx.utils
 import com.google.common.hash.Hashing
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink._
-import io.vertx.core.http.{Cookie, HttpHeaders}
+import io.vertx.core.http.{Cookie, CookieSameSite, HttpHeaders}
 import io.vertx.ext.web.RoutingContext
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils
@@ -76,27 +76,27 @@ class CsrfTokenManager(password: String = "set your password to protect the sand
     }
   }
 
-  val CSRF_TOKEN_COOKIE_NAME = "KEE_CSRF_TOKEN"
+  //  val CSRF_TOKEN_COOKIE_NAME = "KEE_CSRF_TOKEN"
   val CSRF_TOKEN_S_COOKIE_NAME = "KEE_CSRF_TOKEN_S"
+  val CSRF_TOKEN_F_NAME = "csrf_token"
 
-  def distribute(ctx: RoutingContext): Unit = {
+  def issue(ctx: RoutingContext): String = {
     val csrfToken = generate(ctx.request().getHeader(HttpHeaders.USER_AGENT))
-    ctx.response().addCookie(Cookie.cookie(CSRF_TOKEN_COOKIE_NAME, csrfToken.token))
-    ctx.response().addCookie(Cookie.cookie(CSRF_TOKEN_S_COOKIE_NAME, csrfToken.sand))
+    ctx.response().addCookie(strictCookie(Cookie.cookie(CSRF_TOKEN_S_COOKIE_NAME, csrfToken.sand)))
+    csrfToken.token
   }
 
   private def checkValidation(ctx: RoutingContext): Option[CsrfToken] = {
-    val tokenCookie = ctx.request().getCookie(CSRF_TOKEN_COOKIE_NAME)
+    val tokenValue = StringUtils.trimToEmpty(ctx.request().getParam(CSRF_TOKEN_F_NAME))
     val sCookie = ctx.request().getCookie(CSRF_TOKEN_S_COOKIE_NAME)
-    if (tokenCookie == null || sCookie == null) {
+    if (StringUtils.isEmpty(tokenValue) || sCookie == null) {
       return None
     }
 
-    val csrfToken = CsrfToken(tokenCookie.getValue, sCookie.getValue)
+    val csrfToken = CsrfToken(tokenValue, sCookie.getValue)
     if (!validate(csrfToken, ctx.request().getHeader(HttpHeaders.USER_AGENT))) {
       return None
     }
-    ctx.response().removeCookie(CSRF_TOKEN_COOKIE_NAME)
     ctx.response().removeCookie(CSRF_TOKEN_S_COOKIE_NAME)
     Some(csrfToken)
   }
@@ -106,6 +106,11 @@ class CsrfTokenManager(password: String = "set your password to protect the sand
   private def encrypt(str: String): String = Base64.getEncoder.encodeToString(aead.encrypt(str.getBytes(defaultEncoding), ad))
 
   private def decrypt(str: String): String = new String(aead.decrypt(Base64.getDecoder.decode(str), ad), defaultEncoding)
+
+  def strictCookie(cookie: Cookie): Cookie = {
+    cookie.setSameSite(CookieSameSite.STRICT)
+    cookie
+  }
 }
 
 object CsrfTokens {
