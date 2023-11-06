@@ -3,7 +3,7 @@ package com.keevol.keewebx
 import com.keevol.goodies.lifecycle.ShutdownHook
 import com.keevol.kate.{Kate, RouteRegister}
 import com.keevol.keewebx.templating.Jte
-import com.keevol.keewebx.utils.{CsrfTokenManager, WebResponse}
+import com.keevol.keewebx.utils.{CsrfTokenManager, CsrfTokens, WebResponse}
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import org.slf4j.{Logger, LoggerFactory}
@@ -32,7 +32,7 @@ object Bootstrap {
         })
         router.get("/form_submit").handler(ctx => {
           val csrfToken = csrfTokenManager.issue(ctx)
-          WebResponse.html(ctx, Jte.render("form.jte", new JsonObject().put("csrf_token", csrfToken)))
+          WebResponse.html(ctx, Jte.render("form.jte", new JsonObject().put(CsrfTokens.NAME, csrfToken)))
         })
         router.post("/form_submit").handler(ctx => {
           if (csrfTokenManager.isCsrfTokenValid(ctx)) {

@@ -4,6 +4,7 @@ import com.google.common.hash.Hashing
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink._
 import io.vertx.core.http.{Cookie, CookieSameSite, HttpHeaders}
+import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils
@@ -76,10 +77,17 @@ class CsrfTokenManager(password: String = "set your password to protect the sand
     }
   }
 
-  //  val CSRF_TOKEN_COOKIE_NAME = "KEE_CSRF_TOKEN"
   val CSRF_TOKEN_S_COOKIE_NAME = "KEE_CSRF_TOKEN_S"
   val CSRF_TOKEN_F_NAME = "csrf_token"
 
+  /**
+   * place encrypted sand in cookie and return csrf token value to embed in form.
+   *
+   * the encrypted sand can be replaced with hmac value instead.
+   *
+   * @param ctx of web
+   * @return generated csrf token value
+   */
   def issue(ctx: RoutingContext): String = {
     val csrfToken = generate(ctx.request().getHeader(HttpHeaders.USER_AGENT))
     ctx.response().addCookie(strictCookie(Cookie.cookie(CSRF_TOKEN_S_COOKIE_NAME, csrfToken.sand)))
@@ -114,6 +122,13 @@ class CsrfTokenManager(password: String = "set your password to protect the sand
 }
 
 object CsrfTokens {
+
+  val NAME = "csrf_token"
+
+  // how to use in jte: `$unsafe{CsrfTokens.hiddenInputFrom(jsonObjectContext)}`
+  def hiddenInputFrom(pageContext: JsonObject): String = {
+    s"""<input type="hidden" name="${NAME}" value="${pageContext.getString(NAME)}"/>"""
+  }
 
   def main(args: Array[String]): Unit = {
     val csrfTokenManager = new CsrfTokenManager
