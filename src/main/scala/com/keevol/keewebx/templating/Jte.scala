@@ -1,6 +1,6 @@
 package com.keevol.keewebx.templating
 
-import gg.jte.{ContentType, TemplateEngine}
+import gg.jte.{Content, ContentType, TemplateEngine, TemplateOutput}
 import gg.jte.output.StringOutput
 import io.vertx.core.json.JsonObject
 
@@ -10,6 +10,7 @@ import gg.jte.resolve.DirectoryCodeResolver
 import org.slf4j.LoggerFactory
 
 import java.nio.file.Path
+
 /**
  * @author {@link afoo.me}
  */
@@ -31,6 +32,12 @@ object Jte {
     val output = new StringOutput()
     templateEngine.get().render(templatePath, context, output)
     output.toString
+  }
+
+  def createContent(templatePath: String, context: JsonObject): Content = new Content {
+    override def writeTo(templateOutput: TemplateOutput): Unit = {
+      Jte.getJteTemplateEngineIfNecessary().render(templatePath, context, templateOutput)
+    }
   }
 
   def getJteTemplateEngineIfNecessary(): TemplateEngine = templateEngine.get()
