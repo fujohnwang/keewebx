@@ -13,6 +13,10 @@ import io.vertx.ext.web.RoutingContext
  */
 object WebResponse {
 
+  def ok(ctx: RoutingContext, message: String = ""): Unit = ctx.response().end(message)
+
+  def internalError(ctx: RoutingContext, message: String = ""): Unit = ctx.response().setStatusCode(500).end(message)
+
   def json(ctx: RoutingContext, payload: JsonObject): Unit = ResponseUtils.json(ctx, payload, 200)
 
   def html(ctx: RoutingContext, html: String) = ResponseUtils.html(ctx, html, 200)
