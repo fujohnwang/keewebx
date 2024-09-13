@@ -4,6 +4,8 @@ import com.keevol.kate.utils.ResponseUtils
 import io.vertx.core.json.{Json, JsonObject}
 import io.vertx.ext.web.RoutingContext
 
+import java.io.File
+
 
 /**
  * enrich {@link com.keevol.kate.utils.ResponseUtils} if necessary
@@ -34,6 +36,8 @@ object WebResponse {
   def accepted(ctx: RoutingContext): Unit = ctx.response().setStatusCode(202).setStatusMessage("Accepted").end()
 
   def noContent(ctx: RoutingContext): Unit = ctx.response().setStatusCode(204).end()
+
+  def sendFile(ctx: RoutingContext, file: File): Unit = ctx.response().sendFile(file.getAbsolutePath)
 }
 
 
