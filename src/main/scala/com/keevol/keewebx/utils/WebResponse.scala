@@ -1,7 +1,7 @@
 package com.keevol.keewebx.utils
 
 import com.keevol.kate.utils.ResponseUtils
-import io.vertx.core.json.{Json, JsonObject}
+import io.vertx.core.json.{Json, JsonArray, JsonObject}
 import io.vertx.ext.web.RoutingContext
 
 import java.io.File
@@ -20,6 +20,10 @@ object WebResponse {
   def internalError(ctx: RoutingContext, message: String = ""): Unit = ctx.response().setStatusCode(500).end(message)
 
   def json(ctx: RoutingContext, payload: JsonObject): Unit = ResponseUtils.json(ctx, payload, 200)
+
+  def jsonArray(ctx: RoutingContext, payload: JsonArray): Unit = jsonString(ctx, payload.encode())
+
+  def jsonString(ctx: RoutingContext, payload: String): Unit = ctx.response().putHeader("Content-Type", "application/json").end(payload)
 
   def html(ctx: RoutingContext, html: String) = ResponseUtils.html(ctx, html, 200)
 
