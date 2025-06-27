@@ -1,7 +1,7 @@
 package com.keevol.keewebx.templating
 
 import gg.jte.{Content, ContentType, TemplateEngine, TemplateOutput}
-import gg.jte.output.StringOutput
+import gg.jte.output.{StringOutput, Utf8ByteOutput}
 import io.vertx.core.json.JsonObject
 
 import java.util.concurrent.atomic.AtomicReference
@@ -38,7 +38,9 @@ object Jte {
   // init template engine at start
   templateEngine.set(if (isProductionEnv()) {
     logger.info(s"profile=production, create Precompiled TemplateEngine for Jte.")
-    TemplateEngine.createPrecompiled(Path.of("jte-classes"), ContentType.Html, getClass.getClassLoader())
+    val te = TemplateEngine.createPrecompiled(Path.of("jte-classes"), ContentType.Html, getClass.getClassLoader())
+    te.setBinaryStaticContent(true) // if we don't use Utf8ByteOutput, then the byte array will rollback to string for StringOutput
+    te
   } else {
     logger.info(s"profile is not production, so create hot-reloadable TemplateEngine for Jte in Development phase.")
     val codeResolver = new DirectoryCodeResolver(Path.of("src", "main", "jte")) // ResourceCodeResolver
@@ -49,6 +51,12 @@ object Jte {
     val output = new StringOutput()
     templateEngine.get().render(templatePath, context, output)
     output.toString
+  }
+
+  def binaryRender(templatePath: String, context: JsonObject): Array[Byte] = {
+    val output = new Utf8ByteOutput()
+    templateEngine.get().render(templatePath, context, output)
+    output.toByteArray
   }
 
   def createContent(templatePath: String, context: JsonObject): Content = new Content {
