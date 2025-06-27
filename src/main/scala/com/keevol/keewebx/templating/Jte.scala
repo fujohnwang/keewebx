@@ -12,6 +12,23 @@ import org.slf4j.LoggerFactory
 import java.nio.file.Path
 
 /**
+ * For General Usage Purpose.
+ *
+ * Most of the  time, we will use Jte's companion object directly.
+ *
+ * @param templateDir
+ * @param templateContentType
+ */
+class Jte(templateDir: Path, templateContentType: ContentType = ContentType.Html) {
+  private val templateEngine = TemplateEngine.create(new DirectoryCodeResolver(templateDir), templateContentType)
+
+  def render(template: String, context: java.util.Map[String, Object], output: TemplateOutput): TemplateOutput = {
+    templateEngine.render(template, context, output)
+    output
+  }
+}
+
+/**
  * @author {@link afoo.me}
  */
 object Jte {
