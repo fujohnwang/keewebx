@@ -16,7 +16,7 @@
 		<scala.version>2.12.18</scala.version>
 		<scala.compatible.version>2.12</scala.compatible.version>
 		<scala.plugin.version>4.8.1</scala.plugin.version>
-		<vertx.version>4.5.14</vertx.version>
+		<vertx.version>5.0.1</vertx.version>
     </properties>
 
 	<build>
