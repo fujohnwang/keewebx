@@ -38,13 +38,13 @@ object Jte {
   // init template engine at start
   templateEngine.set(if (isProductionEnv()) {
     logger.info(s"profile=production, create Precompiled TemplateEngine for Jte.")
-    val te = TemplateEngine.createPrecompiled(Path.of("jte-classes"), ContentType.Html, getClass.getClassLoader())
+    val te = TemplateEngine.createPrecompiled(ContentType.Html)
     te.setBinaryStaticContent(true) // if we don't use Utf8ByteOutput, then the byte array will rollback to string for StringOutput
     te
   } else {
     logger.info(s"profile is not production, so create hot-reloadable TemplateEngine for Jte in Development phase.")
     val codeResolver = new DirectoryCodeResolver(Path.of("src", "main", "jte")) // ResourceCodeResolver
-    TemplateEngine.create(codeResolver, ContentType.Html)
+    TemplateEngine.create(codeResolver, Path.of("jte-classes"), ContentType.Html)
   })
 
   def render(templatePath: String, context: JsonObject): String = {
