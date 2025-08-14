@@ -16,8 +16,8 @@ import java.nio.file.Path
  *
  * Most of the  time, we will use Jte's companion object directly.
  *
- * @param templateDir
- * @param templateContentType
+ * @param templateDir the directory to load jte template from.
+ * @param templateContentType default is html.
  */
 class Jte(templateDir: Path, templateContentType: ContentType = ContentType.Html) {
   private val templateEngine = TemplateEngine.create(new DirectoryCodeResolver(templateDir), templateContentType)
@@ -29,7 +29,7 @@ class Jte(templateDir: Path, templateContentType: ContentType = ContentType.Html
 }
 
 /**
- * @author {@link afoo.me}
+ * @author fq@keevol.cn
  */
 object Jte {
   private val logger = LoggerFactory.getLogger("Jte Utility")
@@ -47,18 +47,39 @@ object Jte {
     TemplateEngine.create(codeResolver, Path.of("jte-classes"), ContentType.Html)
   })
 
+  def apply[T](templatePath: String, context: T): String = {
+    val output = new StringOutput()
+    templateEngine.get().render(templatePath, context, output)
+    output.toString
+  }
+
   def render(templatePath: String, context: JsonObject): String = {
     val output = new StringOutput()
     templateEngine.get().render(templatePath, context, output)
     output.toString
   }
 
+  /**
+   * mainly for rendering binary output like images, audio, video, etc.
+   *
+   * @param templatePath path of jte template file
+   * @param context view model data
+   * @return the binary data representation.
+   */
   def binaryRender(templatePath: String, context: JsonObject): Array[Byte] = {
     val output = new Utf8ByteOutput()
     templateEngine.get().render(templatePath, context, output)
     output.toByteArray
   }
 
+
+  /**
+   * @see also [[com.keevol.keewebx.templating.Partial]]
+   *
+   * @param templatePath path of jte template file
+   * @param context view model data
+   * @return Content of jte
+   */
   def createContent(templatePath: String, context: JsonObject): Content = new Content {
     override def writeTo(templateOutput: TemplateOutput): Unit = {
       Jte.getJteTemplateEngineIfNecessary().render(templatePath, context, templateOutput)
