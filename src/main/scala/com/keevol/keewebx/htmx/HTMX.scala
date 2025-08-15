@@ -91,19 +91,28 @@ object HTMX {
     setTriggerEvent(ctx, triggerHeader, HxTrigger(eventName, eventValue = Some(message)))
   }
 
+  /**
+   * 这里有个问题， 因为是通过http header设置一个json字符串，但其实，header的编码是ISO-8859-1，所以， 中文字符会出现乱码。
+   *
+   * 编码也没有太好的方式，所以，这里的参数值最好都是英文的。
+   *
+   * @param ctx
+   * @param triggerHeader
+   * @param triggerEvent
+   */
   private def setTriggerEvent(ctx: RoutingContext, triggerHeader: String, triggerEvent: HxTrigger): Unit = {
     if (triggerEvent.eventDetail.isEmpty && triggerEvent.eventValue.isEmpty) {
-      ctx.response().putHeader(triggerHeader, encodeHeaderValue(triggerEvent.eventName))
+      ctx.response().putHeader(triggerHeader, triggerEvent.eventName)
     } else if (triggerEvent.eventValue.isDefined) {
-      ctx.response().putHeader(triggerHeader, encodeHeaderValue(JsonObject.of(triggerEvent.eventName, triggerEvent.eventValue.get).encode()))
+      ctx.response().putHeader(triggerHeader, JsonObject.of(triggerEvent.eventName, triggerEvent.eventValue.get).encode())
     } else if (triggerEvent.eventDetail.isDefined) {
       val payload = new JsonObject()
       payload.put(triggerEvent.eventName, triggerEvent.eventDetail.get)
-      ctx.response().putHeader(triggerHeader, encodeHeaderValue(payload.encode()))
+      ctx.response().putHeader(triggerHeader, payload.encode())
     }
   }
 
-  private def encodeHeaderValue(headerValue:String) :String = URLEncoder.encode(headerValue, StandardCharsets.UTF_8)
+  private def encodeHeaderValue(headerValue: String): String = URLEncoder.encode(headerValue, StandardCharsets.UTF_8)
 
 
   // ----------------------- Helpers Utilities -----------------------------
