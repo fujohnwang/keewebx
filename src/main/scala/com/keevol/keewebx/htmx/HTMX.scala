@@ -80,7 +80,7 @@ object HTMX {
 
   def setTriggerAfterSwap(ctx: RoutingContext, triggerEvent: HxTrigger): Unit = setTriggerEvent(ctx, "HX-Trigger-After-Swap", triggerEvent)
 
-  def triggerEvent(ctx: RoutingContext, eventName: String, message: String, timing: Option[String] = Some("HX-Trigger-After-Settle")): Unit = {
+  def triggerEvent(ctx: RoutingContext, eventName: String, message: String, timing: Option[String] = Some("HX-Trigger")): Unit = {
     val triggerHeader = timing match {
       case Some(header) => header
       case None => "HX-Trigger-After-Settle"
