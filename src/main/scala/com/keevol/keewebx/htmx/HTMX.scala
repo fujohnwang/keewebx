@@ -4,6 +4,9 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import org.apache.commons.lang3.StringUtils
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
 /**
  * This is the utility class implementation mentioned in ebook 'Unveil HTMX'(HTMX揭秘){@link https:// store.afoo.me / l / htmx}
  *
@@ -90,15 +93,17 @@ object HTMX {
 
   private def setTriggerEvent(ctx: RoutingContext, triggerHeader: String, triggerEvent: HxTrigger): Unit = {
     if (triggerEvent.eventDetail.isEmpty && triggerEvent.eventValue.isEmpty) {
-      ctx.response().putHeader(triggerHeader, triggerEvent.eventName)
+      ctx.response().putHeader(triggerHeader, encodeHeaderValue(triggerEvent.eventName))
     } else if (triggerEvent.eventValue.isDefined) {
-      ctx.response().putHeader(triggerHeader, JsonObject.of(triggerEvent.eventName, triggerEvent.eventValue.get).encode())
+      ctx.response().putHeader(triggerHeader, encodeHeaderValue(JsonObject.of(triggerEvent.eventName, triggerEvent.eventValue.get).encode()))
     } else if (triggerEvent.eventDetail.isDefined) {
       val payload = new JsonObject()
       payload.put(triggerEvent.eventName, triggerEvent.eventDetail.get)
-      ctx.response().putHeader(triggerHeader, payload.encode())
+      ctx.response().putHeader(triggerHeader, encodeHeaderValue(payload.encode()))
     }
   }
+
+  private def encodeHeaderValue(headerValue:String) :String = URLEncoder.encode(headerValue, StandardCharsets.UTF_8)
 
 
   // ----------------------- Helpers Utilities -----------------------------
