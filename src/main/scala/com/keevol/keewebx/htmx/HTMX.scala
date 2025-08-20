@@ -104,15 +104,27 @@ object HTMX {
     if (triggerEvent.eventDetail.isEmpty && triggerEvent.eventValue.isEmpty) {
       ctx.response().putHeader(triggerHeader, triggerEvent.eventName)
     } else if (triggerEvent.eventValue.isDefined) {
-      ctx.response().putHeader(triggerHeader, JsonObject.of(triggerEvent.eventName, triggerEvent.eventValue.get).encode())
+      ctx.response().putHeader(triggerHeader, encodeHeaderValue(JsonObject.of(triggerEvent.eventName, triggerEvent.eventValue.get).encode()))
     } else if (triggerEvent.eventDetail.isDefined) {
       val payload = new JsonObject()
       payload.put(triggerEvent.eventName, triggerEvent.eventDetail.get)
-      ctx.response().putHeader(triggerHeader, payload.encode())
+      ctx.response().putHeader(triggerHeader, encodeHeaderValue(payload.encode()))
     }
   }
 
-  private def encodeHeaderValue(headerValue: String): String = URLEncoder.encode(headerValue, StandardCharsets.UTF_8)
+  /**
+   * JavaScript 的 encodeURIComponent 编码后不会对某些字符（如 !, ', (, ), *）进行转义，而 URLEncoder 可能会转义这些字符。如果需要完全匹配 encodeURIComponent 的行为，可以在编码后对这些字符进行反转义处理。
+   *
+   * @param headerValue
+   * @return
+   */
+  private def encodeHeaderValue(headerValue: String): String = URLEncoder.encode(headerValue, StandardCharsets.UTF_8.name())
+    .replace("+", "%20")
+    .replace("%21", "!")
+    .replace("%27", "'")
+    .replace("%28", "(")
+    .replace("%29", ")")
+    .replace("%2A", "*");
 
 
   // ----------------------- Helpers Utilities -----------------------------
