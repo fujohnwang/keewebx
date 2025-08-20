@@ -96,6 +96,12 @@ object HTMX {
    *
    * 编码也没有太好的方式，所以，这里的参数值最好都是英文的。
    *
+   * ---
+   *
+   * NOTE: 配合客户端js函数里decodeURIComponent(evt.detail.value)， 我们通过在server side对json里的value进行uri encode， 现在可以实现中文内容通过header传递， 就是复杂json可能就没那么友好，还得在客户单decode之后加JSON.parse。
+   *
+   * 这也算是htmx这个框架坑的地方吧！
+   *
    * @param ctx
    * @param triggerHeader
    * @param triggerEvent
