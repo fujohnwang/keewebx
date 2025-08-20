@@ -2,7 +2,7 @@ package com.keevol.keewebx
 
 import com.keevol.config.Konfig
 import com.keevol.goodies.Presets
-import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.{StringUtils, Strings}
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 
@@ -23,6 +23,6 @@ object KeewebxGlobals {
   def isProductionEnv(): Boolean = {
     if (config.get() == null) return false
     val profile = config.get().get("profile")
-    StringUtils.equalsIgnoreCase(profile, "production") || StringUtils.equalsIgnoreCase(profile, "prod") || StringUtils.equalsIgnoreCase(profile, "prd")
+    Strings.CI.equals(profile, "production") || Strings.CI.equals(profile, "prod") || Strings.CI.equals(profile, "prd")
   }
 }
