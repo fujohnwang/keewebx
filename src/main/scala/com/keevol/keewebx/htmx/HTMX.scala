@@ -104,11 +104,11 @@ object HTMX {
     if (triggerEvent.eventDetail.isEmpty && triggerEvent.eventValue.isEmpty) {
       ctx.response().putHeader(triggerHeader, triggerEvent.eventName)
     } else if (triggerEvent.eventValue.isDefined) {
-      ctx.response().putHeader(triggerHeader, encodeHeaderValue(JsonObject.of(triggerEvent.eventName, triggerEvent.eventValue.get).encode()))
+      ctx.response().putHeader(triggerHeader, JsonObject.of(triggerEvent.eventName, encodeHeaderValue(triggerEvent.eventValue.get)).encode())
     } else if (triggerEvent.eventDetail.isDefined) {
       val payload = new JsonObject()
-      payload.put(triggerEvent.eventName, triggerEvent.eventDetail.get)
-      ctx.response().putHeader(triggerHeader, encodeHeaderValue(payload.encode()))
+      payload.put(triggerEvent.eventName, encodeHeaderValue(triggerEvent.eventDetail.get.encode()))
+      ctx.response().putHeader(triggerHeader, payload.encode())
     }
   }
 
@@ -118,7 +118,7 @@ object HTMX {
    * @param headerValue
    * @return
    */
-  private def encodeHeaderValue(headerValue: String): String = URLEncoder.encode(headerValue, StandardCharsets.UTF_8.name())
+  def encodeHeaderValue(headerValue: String): String = URLEncoder.encode(headerValue, StandardCharsets.UTF_8.name())
     .replace("+", "%20")
     .replace("%21", "!")
     .replace("%27", "'")
@@ -131,4 +131,9 @@ object HTMX {
   private def getHeaderValueOf(header: String, ctx: RoutingContext): String = StringUtils.trimToEmpty(ctx.request().getHeader(header))
 
   private def option(value: String): Option[String] = if (StringUtils.isEmpty(value)) None else Some(value)
+
+  def main(args: Array[String]): Unit = {
+    val json = JsonObject.of("oops", "请求参数不全 ！")
+    println(encodeHeaderValue(json.encode()))
+  }
 }
