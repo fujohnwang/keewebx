@@ -1,4 +1,5 @@
 package com.keevol.keewebx.htmx
+
 /**
  * <pre>
  * :::    ::: :::::::::: :::::::::: :::     :::  ::::::::  :::
@@ -18,6 +19,7 @@ package com.keevol.keewebx.htmx
  * <p>
  * Copyright 2017 © 杭州福强科技有限公司版权所有 (<a href="https://www.keevol.cn">keevol.cn</a>)
  */
+
 import com.keevol.keewebx.utils.WebResponse
 import io.vertx.ext.web.RoutingContext
 
@@ -40,6 +42,22 @@ object Hx {
       HTMX.setTrigger(ctx, localFuncToRun.get)
     }
     WebResponse.html(ctx, html)
+  }
+
+  /**
+   *     htmx.on("oops", function(evt){
+   *         Swal.fire({
+   *           title: decodeURIComponent(evt.detail.value),
+   *           icon: "error"
+   *         });
+   *     })
+   *
+   * @param ctx routing context handle to use
+   * @param errorMessage the notification message on error
+   */
+  def oops(ctx: RoutingContext, errorMessage: String): Unit = {
+    HTMX.setTrigger(ctx, HxTrigger("oops", eventValue = Option(errorMessage)))
+    WebResponse.ok(ctx)
   }
 
 }
