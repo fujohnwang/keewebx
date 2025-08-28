@@ -45,6 +45,21 @@ object Hx {
   }
 
   /**
+   *     htmx.on("done", function(evt){
+   *         Swal.fire({
+   *           title: decodeURIComponent(evt.detail.value),
+   *           icon: "success"
+   *         })
+   *     })
+   * @param ctx
+   * @param message
+   */
+  def done(ctx: RoutingContext, message: String): Unit = {
+    HTMX.setTrigger(ctx, HxTrigger("done", eventValue = Option(message)))
+    WebResponse.ok(ctx)
+  }
+
+  /**
    *     htmx.on("oops", function(evt){
    *         Swal.fire({
    *           title: decodeURIComponent(evt.detail.value),
